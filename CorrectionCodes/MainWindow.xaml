@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CorrectionCodes"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+        Title="Testowanie kodów detekcji i korekty błędów" Height="450" Width="800">
+	<Grid>
+		<TextBlock>Yo nibbas</TextBlock>
+	</Grid>
 </Window>
