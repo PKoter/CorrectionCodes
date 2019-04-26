@@ -36,8 +36,8 @@ before_build:
   - cmd: dotnet restore ./Tests/Tests.csproj --verbosity m
 build_script:
   # output will be in ./src/bin/debug/netcoreapp1.1/publish
-  - cmd: dotnet build CorrectionCodes
-  - cmd: dotnet build Tests
+  - cmd: dotnet build ./CorrectionCodes/CorrectionCodes.csproj
+  - cmd: dotnet build ./Tests/Tests.csproj
 after_build:
   # For once the build has completed
 clone_depth: 1
