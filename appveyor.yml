@@ -12,7 +12,7 @@ install:
   # Install repo specific stuff here
 build:
   #parallel: true                  # enable MSBuild parallel builds
-  project: MyTestAzureCS.sln      # path to Visual Studio solution or project
+  project: CorrectionCodes.sln      # path to Visual Studio solution or project
   #publish_wap: true               # package Web Application Projects (WAP) for Web Deploy
   #publish_wap_xcopy: true         # package Web Application Projects (WAP) for XCopy deployment
   #publish_wap_beanstalk: true     # Package Web Applications for AWS Elastic Beanstalk deployment
