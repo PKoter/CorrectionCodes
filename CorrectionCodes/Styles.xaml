@@ -1,0 +1,40 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+										xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+										xmlns:local="clr-namespace:CorrectionCodes"
+										xmlns:components="clr-namespace:CorrectionCodes.Components"
+										xmlns:models="clr-namespace:CorrectionCodes.Models">
+	<Style TargetType="components:EditableBitTable">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="components:EditableBitTable">
+					<ListBox Background="Gainsboro" BorderBrush="DarkBlue" BorderThickness="1">
+						<ListBox.ItemTemplate>
+							<DataTemplate DataType="models:ByteModel">
+								<ListView ItemsSource="{Binding Bits, Mode=OneWay}" Background="Transparent" BorderBrush="Transparent" 
+													Margin="0,8,0,8">
+									<ListView.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel Orientation="Horizontal" />
+										</ItemsPanelTemplate>
+									</ListView.ItemsPanel>
+									<ListView.ItemTemplate>
+										<DataTemplate DataType="models:BitModel">
+											<Button x:Name="btn" Width="40" Height="32" Background="LightBlue" BorderThickness="1" 
+															BorderBrush="DimGray" Margin="8,0,0,0" Content="{Binding NumericValue, Mode=OneWay}" 
+															Command="{Binding FlipBitCommand, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType=components:EditableBitTable}}" CommandParameter="{Binding Mode=OneWay}"/>
+											<DataTemplate.Triggers>
+												<DataTrigger Binding="{Binding Modified, Mode=OneWay}" Value="True">
+													<Setter TargetName="btn" Property="Background" Value="Wheat"/>
+												</DataTrigger>
+											</DataTemplate.Triggers>
+										</DataTemplate>
+									</ListView.ItemTemplate>
+								</ListView>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+</ResourceDictionary>
