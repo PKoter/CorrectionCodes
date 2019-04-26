@@ -1,0 +1,52 @@
+version: '1.0.{build}'
+image: Visual Studio 2017
+branches:
+  only:
+  - master
+skip_tags: true
+
+init:
+  # Good practise, because Windows line endings are different from Unix/Linux ones
+  - cmd: git config --global core.autocrlf true
+install:
+  # Install repo specific stuff here
+build:
+  #parallel: true                  # enable MSBuild parallel builds
+  project: MyTestAzureCS.sln      # path to Visual Studio solution or project
+  #publish_wap: true               # package Web Application Projects (WAP) for Web Deploy
+  #publish_wap_xcopy: true         # package Web Application Projects (WAP) for XCopy deployment
+  #publish_wap_beanstalk: true     # Package Web Applications for AWS Elastic Beanstalk deployment
+  #publish_wap_octopus: true       # Package Web Applications for Octopus deployment
+  #publish_azure_webjob: true      # Package Azure WebJobs for Zip Push deployment
+  #publish_azure: true             # package Azure Cloud Service projects and push to artifacts
+  #publish_aspnet_core: true       # Package ASP.NET Core projects
+  #publish_core_console: true      # Package .NET Core console projects
+  #publish_nuget: true             # package projects with .nuspec files and push to artifacts
+  #publish_nuget_symbols: true     # generate and publish NuGet symbol packages
+  #include_nuget_references: true  # add -IncludeReferencedProjects option while packaging NuGet artifacts
+
+  # MSBuild verbosity level
+  verbosity: detailed
+before_build:
+  # Display .NET Core version
+  - cmd: dotnet --version
+  # Display minimal restore text
+  - cmd: dotnet restore ./src/src.csproj --verbosity m
+build_script:
+  # output will be in ./src/bin/debug/netcoreapp1.1/publish
+  - cmd: dotnet build CorrectionCodes
+  - cmd: dotnet build Tests
+after_build:
+  # For once the build has completed
+clone_depth: 1
+test:
+  # only assemblies to test
+  assemblies:
+    only:
+      - 'CorrectionCodes\bin\Debug\Tests.dll'
+
+  # only categories to test
+
+on_finish :
+  # any cleanup in here
+deploy: off
