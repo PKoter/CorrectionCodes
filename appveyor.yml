@@ -31,11 +31,13 @@ before_build:
   # Display .NET Core version
   - cmd: dotnet --version
   # Display minimal restore text
-  - cmd: dotnet restore ./src/src.csproj --verbosity m
+  - cmd: dotnet restore ./CorrectionCodes/CorrectionCodes.csproj --verbosity m
+  - cmd: dotnet restore ./CorrectionCodes.Core/CorrectionCodes.Core.csproj --verbosity m
+  - cmd: dotnet restore ./Tests/Tests.csproj --verbosity m
 build_script:
   # output will be in ./src/bin/debug/netcoreapp1.1/publish
-  - cmd: dotnet build CorrectionCodes
-  - cmd: dotnet build Tests
+  - cmd: dotnet build ./CorrectionCodes.Core/CorrectionCodes.Core.csproj
+  - cmd: dotnet build ./Tests/Tests.csproj
 after_build:
   # For once the build has completed
 clone_depth: 1
