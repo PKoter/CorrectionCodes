@@ -1,22 +1,27 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
+using PropertyChanged;
 
 namespace CorrectionCodes.Models
 {
+	[UsedImplicitly]
 	public sealed class BitModel : INotifyPropertyChanged
 	{
-		private int _numericValue;
+		private byte[] _source;
+		private bool[] _changes;
+		private int _index;
 
+		[DoNotCheckEquality]
 		public int NumericValue
 		{
-			get => _numericValue;
-			set
+			get => _source[_index];
+			private set
 			{
-				if (value != _numericValue)
-					Modified = !Modified;
-
-				_numericValue = value;
+				Modified = !Modified;
+				_changes[_index] = Modified;
+				_source[_index] = (byte)value;
 			}
 		}
 
@@ -27,17 +32,26 @@ namespace CorrectionCodes.Models
 		}
 
 		public bool Modified { get; set; }
+		public bool DetectedError { get; set; }
 
-		public BitModel(int numericValue) 
+		public BitModel([NotNull] byte[] source, int index)
 		{
-			_numericValue = numericValue;
+			_index = index;
+			_source = source;
 		}
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public void FlipBit()
 		{
-			NumericValue = Bool ? 0 : 1;
+			NumericValue ^= 1;
+			_changes[_index] = Modified;
+		}
+
+		public void SetBitChanges(bool[] changes)
+		{
+			_changes = changes;
+			Modified = _changes[_index];
 		}
 	}
 }
