@@ -13,7 +13,7 @@ namespace CorrectionCodes.Models
 		private bool[] _changes;
 		private int _index;
 
-		[DoNotCheckEquality]
+		//[DoNotCheckEquality]
 		public int NumericValue
 		{
 			get => _source[_index];
