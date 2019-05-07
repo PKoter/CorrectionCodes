@@ -20,9 +20,34 @@ namespace CorrectionCodes
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private MainController _controller;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+			_controller = new MainController();
+			this.DataContext = _controller;
+		}
+
+		private void GenerateTextData(object sender, RoutedEventArgs e)
+		{
+			_controller.GenerateText();
+		}
+
+		private void OnMainGridMouseDown(object sender, MouseButtonEventArgs e)
+		{
+			Keyboard.ClearFocus();
+		}
+
+		private void OnTextInputLostFocus(object sender, RoutedEventArgs e)
+		{
+			_controller.ConvertTextToBits();
+		}
+
+		private void GenerateErrors(object sender, RoutedEventArgs e)
+		{
+			_controller.GenerateErrors();
+
 		}
 	}
 }
