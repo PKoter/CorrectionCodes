@@ -11,9 +11,20 @@ namespace CorrectionCodes.Components
 {
 	public sealed class FlipBitCommand : ICommand
 	{
+		private bool _canExecute = true;
+
+		public void SetCanExecute(bool canExecute)
+		{
+			if (_canExecute != canExecute)
+			{
+				_canExecute = canExecute;
+				CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
 		public bool CanExecute(object parameter)
 		{
-			return true;
+			return _canExecute;
 		}
 
 		public void Execute(object parameter)
