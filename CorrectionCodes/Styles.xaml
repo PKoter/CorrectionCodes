@@ -2,37 +2,97 @@
 										xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 										xmlns:local="clr-namespace:CorrectionCodes"
 										xmlns:components="clr-namespace:CorrectionCodes.Components"
-										xmlns:models="clr-namespace:CorrectionCodes.Models">
+										xmlns:models="clr-namespace:CorrectionCodes.Models"
+										xmlns:system="clr-namespace:System;assembly=mscorlib">
+	<Style TargetType="ListViewItem">
+		<Setter Property="Focusable" Value="False"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ListViewItem}">
+					<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+														SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+														VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style BasedOn="{StaticResource {x:Type Button}}" x:Key="bitBtn" TargetType="Button">
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="Button">
+					<Rectangle x:Name="rect" Stroke="Transparent" Fill="Transparent"/>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True">
+							<Setter TargetName="rect" Property="Fill" Value="#10000000"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style x:Key="bitBorder" TargetType="Border">
+		<Style.Triggers>
+			<Trigger Property="UIElement.IsMouseOver" Value="True">
+				<Setter Property="Panel.Background" Value="#FFBEE6FD"/>
+			</Trigger>
+		</Style.Triggers>
+	</Style>
+
 	<Style TargetType="components:EditableBitTable">
 		<Setter Property="Template">
 			<Setter.Value>
 				<ControlTemplate TargetType="components:EditableBitTable">
-					<ListBox Background="Gainsboro" BorderBrush="DarkBlue" BorderThickness="1">
+					<ListView x:Name="list" Background="Transparent" BorderBrush="DarkBlue" BorderThickness="1" 
+										ItemsSource="{Binding ItemsSource, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
+										ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+						<ListView.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel ItemWidth="260" IsItemsHost="True" />
+							</ItemsPanelTemplate>
+						</ListView.ItemsPanel>
 						<ListBox.ItemTemplate>
 							<DataTemplate DataType="models:ByteModel">
-								<ListView ItemsSource="{Binding Bits, Mode=OneWay}" Background="Transparent" BorderBrush="Transparent" 
-													Margin="0,8,0,8">
-									<ListView.ItemsPanel>
-										<ItemsPanelTemplate>
-											<StackPanel Orientation="Horizontal" />
-										</ItemsPanelTemplate>
-									</ListView.ItemsPanel>
-									<ListView.ItemTemplate>
-										<DataTemplate DataType="models:BitModel">
-											<Button x:Name="btn" Width="40" Height="32" Background="LightBlue" BorderThickness="1" 
-															BorderBrush="DimGray" Margin="8,0,0,0" Content="{Binding NumericValue, Mode=OneWay}" 
-															Command="{Binding FlipBitCommand, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType=components:EditableBitTable}}" CommandParameter="{Binding Mode=OneWay}"/>
-											<DataTemplate.Triggers>
-												<DataTrigger Binding="{Binding Modified, Mode=OneWay}" Value="True">
-													<Setter TargetName="btn" Property="Background" Value="Wheat"/>
-												</DataTrigger>
-											</DataTemplate.Triggers>
-										</DataTemplate>
-									</ListView.ItemTemplate>
-								</ListView>
+								<StackPanel Orientation="Horizontal" Margin="5,5,0,0" Width="250" Height="30">
+									<TextBlock Text="{Binding Index, Mode=OneWay}" VerticalAlignment="Center" FontSize="14"
+														 Foreground="Blue" TextDecorations="Underline" >
+										<TextBlock.ToolTip>
+											<TextBlock Text="{Binding Tooltip, Mode=OneWay}" Margin="10,0" FontSize="14"/>
+										</TextBlock.ToolTip>
+									</TextBlock>
+									<ListView ItemsSource="{Binding Bits, Mode=OneWay}" Background="Transparent" BorderBrush="Transparent" 
+														Padding="0">
+										<ListView.ItemsPanel>
+											<ItemsPanelTemplate>
+												<StackPanel Orientation="Horizontal" />
+											</ItemsPanelTemplate>
+										</ListView.ItemsPanel>
+										<ListView.ItemTemplate>
+											<DataTemplate DataType="models:BitModel">
+												<Grid Margin="5,0,0,0" Width="22" Height="22">
+													<Border x:Name="border" BorderBrush="DimGray" Background="GhostWhite" BorderThickness="1"
+																	Style="{StaticResource bitBorder}" IsHitTestVisible="False">
+														<TextBlock Text="{Binding NumericValue, Mode=OneWay}" FontSize="14" HorizontalAlignment="Center"
+																			 VerticalAlignment="Center" />
+													</Border> 
+													<Button x:Name="btn" Style="{StaticResource bitBtn}"
+																	Command="{Binding FlipBitCommand, Mode=OneTime, RelativeSource={RelativeSource FindAncestor, AncestorType=components:EditableBitTable}}" 
+																	CommandParameter="{Binding Mode=OneWay}">
+													</Button>
+												</Grid>
+												<DataTemplate.Triggers>
+													<DataTrigger Binding="{Binding Modified, Mode=OneWay}" Value="True">
+														<Setter TargetName="border" Property="Background" Value="#8FF5DEB3"/>
+													</DataTrigger>
+												</DataTemplate.Triggers>
+											</DataTemplate>
+										</ListView.ItemTemplate>
+									</ListView>
+								</StackPanel>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
-					</ListBox>
+					</ListView>
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
