@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace CorrectionCodes.Core
 {
@@ -48,10 +47,8 @@ namespace CorrectionCodes.Core
 
 		public void DetectBitErrors(BitData transmittedData)
 		{
-			var inputBytes = transmittedData.TramsmittedBytes;
-			var crcBytes   = transmittedData.CorrectionBytes;
-			var payload    = inputBytes.Concat(crcBytes).ToArray();
-			var crc        = ComputeChecksum(payload);
+			var payloadBytes = transmittedData.TramsmittedBytes;
+			var crc          = ComputeChecksum(payloadBytes);
 
 			transmittedData.IncorrectTransmission = crc != 0;
 		}
