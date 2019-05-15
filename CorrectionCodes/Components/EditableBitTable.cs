@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
 using System.Windows.Input;
 using CorrectionCodes.Models;
 using JetBrains.Annotations;
@@ -50,19 +48,27 @@ namespace CorrectionCodes.Components
 
 		private static void OnBitSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dpea)
 		{
-			var bits = dpea.NewValue as byte[];
-			var byteModels = CreateModels(bits);
-
 			var self = dependencyObject as EditableBitTable;
+			if (!(dpea.NewValue is byte[] bits))
+			{
+				self.ItemsSource = null;
+				return;
+			}
+
+			var byteModels = CreateModels(bits);
 			self.ItemsSource = byteModels;
 		}
 
 		private static void OnBitsModified(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dpea)
 		{
-			var bitChanges = dpea.NewValue as bool[];
 			var self = dependencyObject as EditableBitTable;
+			if (!(dpea.NewValue is bool[] bitChanges))
+			{
+				self.ItemsSource = null;
+				return;
+			}
+			
 			var byteModels = self.ItemsSource as List<ByteModel>;
-
 			var bitModels = byteModels.SelectMany(bm => bm.Bits);
 			foreach (var bitModel in bitModels)
 			{
