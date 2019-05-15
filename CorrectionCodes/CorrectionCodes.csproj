@@ -62,10 +62,6 @@
     <StartupObject>CorrectionCodes.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=2019.1.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\jetbrains.annotations\2019.1.1\lib\netstandard2.0\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -82,9 +78,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AlgorithmContextControl.xaml.cs">
+      <DependentUpon>AlgorithmContextControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainController.cs" />
+    <Compile Include="UI\NegateBoolConverter.cs" />
+    <Compile Include="UI\NumberComparerConverter.cs" />
     <Compile Include="UI\NumericTextBox.cs" />
     <Compile Include="UI\SuccinctGrid.cs" />
+    <Page Include="AlgorithmContextControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
