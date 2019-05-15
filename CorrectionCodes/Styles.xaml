@@ -49,7 +49,7 @@
 										ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
 						<ListView.ItemsPanel>
 							<ItemsPanelTemplate>
-								<WrapPanel ItemWidth="260" IsItemsHost="True" />
+								<WrapPanel ItemWidth="240" IsItemsHost="True" />
 							</ItemsPanelTemplate>
 						</ListView.ItemsPanel>
 						<ListBox.ItemTemplate>
@@ -70,8 +70,8 @@
 										</ListView.ItemsPanel>
 										<ListView.ItemTemplate>
 											<DataTemplate DataType="models:BitModel">
-												<Grid Margin="5,0,0,0" Width="22" Height="22">
-													<Border x:Name="border" BorderBrush="DimGray" Background="GhostWhite" BorderThickness="1"
+												<Grid Margin="0,0,0,0" Width="22" Height="22">
+													<Border x:Name="border" BorderBrush="DimGray" Background="GhostWhite" BorderThickness="0,1,1,1"
 																	Style="{StaticResource bitBorder}" IsHitTestVisible="False">
 														<TextBlock Text="{Binding NumericValue, Mode=OneWay}" FontSize="14" HorizontalAlignment="Center"
 																			 VerticalAlignment="Center" />
@@ -82,8 +82,11 @@
 													</Button>
 												</Grid>
 												<DataTemplate.Triggers>
+													<DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+														<Setter TargetName="border" Property="BorderThickness" Value="1"/>
+													</DataTrigger>
 													<DataTrigger Binding="{Binding Modified, Mode=OneWay}" Value="True">
-														<Setter TargetName="border" Property="Background" Value="#8FF5DEB3"/>
+														<Setter TargetName="border" Property="Background" Value="#9FFFDEB3"/>
 													</DataTrigger>
 												</DataTemplate.Triggers>
 											</DataTemplate>
@@ -96,5 +99,58 @@
 				</ControlTemplate>
 			</Setter.Value>
 		</Setter>
+	</Style>
+
+	<Style TargetType="TabItem">
+		<Setter Property="FrameworkElement.FocusVisualStyle">
+			<Setter.Value>
+				<Style TargetType="IFrameworkInputElement">
+					<Setter Property="Control.Template">
+						<Setter.Value>
+							<ControlTemplate>
+								<Rectangle Stroke="Black" StrokeThickness="1" StrokeDashArray="1 2" Margin="2,2,2,2" SnapsToDevicePixels="True" />
+							</ControlTemplate>
+						</Setter.Value>
+					</Setter>
+				</Style>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="TextElement.Foreground" Value="#FF000000"/>
+		<Setter Property="Panel.Background" Value="#FFF0F0F0"/>
+		<Setter Property="Border.BorderBrush" Value="#FFACACAC"/>
+		<Setter Property="FrameworkElement.Margin" Value="0"/>
+		<Setter Property="Control.Padding" Value="8,2,8,2"/>
+		<Setter Property="Control.HorizontalContentAlignment" Value="Stretch"/>
+		<Setter Property="Control.VerticalContentAlignment" Value="Stretch"/>
+		<Setter Property="Control.Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="TabItem">
+					<Border BorderThickness="1,1,1,0" BorderBrush="{TemplateBinding Border.BorderBrush}" 
+									Background="{TemplateBinding Panel.Background}" Name="mainBorder" Margin="0,-2,0,0">
+						<ContentPresenter RecognizesAccessKey="True" Content="{TemplateBinding HeaderedContentControl.Header}" 
+															ContentTemplate="{TemplateBinding HeaderedContentControl.HeaderTemplate}" 
+															ContentStringFormat="{TemplateBinding HeaderedContentControl.HeaderStringFormat}" 
+															ContentSource="Header" Name="contentPresenter" Margin="{TemplateBinding Control.Padding}" 
+															HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+															SnapsToDevicePixels="{TemplateBinding UIElement.SnapsToDevicePixels}" Focusable="False" />
+					</Border>
+					<ControlTemplate.Triggers>
+						<Trigger Property="IsMouseOver" Value="True" SourceName="mainBorder">
+							<Setter Property="Panel.Background" TargetName="mainBorder" Value="#8F9EC4DA"/>
+						</Trigger>
+						<Trigger Property="IsSelected" Value="True">
+							<Setter Property="Panel.Background" TargetName="mainBorder" Value="LightSkyBlue"/>
+							<Setter Property="Panel.ZIndex" Value="1"/>
+							<Setter Property="BorderThickness" TargetName="mainBorder" Value="0"/>
+							<Setter Property="Margin" TargetName="mainBorder" Value="0,-2,0,-2"/>
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+	<Style TargetType="TabPanel" >
+		<Setter Property="Margin" Value="0"/>
 	</Style>
 </ResourceDictionary>
