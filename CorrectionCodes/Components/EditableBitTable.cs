@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CorrectionCodes.Core;
 using CorrectionCodes.Models;
 using JetBrains.Annotations;
 
@@ -10,16 +12,21 @@ namespace CorrectionCodes.Components
 {
 	public sealed class EditableBitTable : ListBox
 	{
-		public ICommand FlipBitCommand { get; private set; } = new FlipBitCommand();
+		public ICommand FlipBitCommand { get; private set; }
 
-		public static DependencyProperty ReadOnlyProperty = 
-			DependencyProperty.Register(nameof(ReadOnly), typeof(bool), typeof(EditableBitTable), new PropertyMetadata(OnReadOnlyChanged));
+		public static DependencyProperty ReadOnlyProperty =
+			DependencyProperty.Register(nameof(ReadOnly), typeof(bool), typeof(EditableBitTable),
+										new PropertyMetadata(OnReadOnlyChanged));
 
-		public static DependencyProperty BitsProperty = 
-			DependencyProperty.Register(nameof(Bits), typeof(byte[]), typeof(EditableBitTable), new PropertyMetadata(OnBitSourceChanged));
+		public static DependencyProperty BitChangesProperty =
+			DependencyProperty.Register(nameof(BitChanges), typeof(bool[]), typeof(EditableBitTable),
+										new PropertyMetadata(OnBitsModified));
 
-		public static DependencyProperty BitChangesProperty = 
-			DependencyProperty.Register(nameof(BitChanges), typeof(bool[]), typeof(EditableBitTable), new PropertyMetadata(OnBitsModified));
+		public static DependencyProperty DataProperty =
+			DependencyProperty.Register(nameof(Data), typeof(BitData), typeof(EditableBitTable),
+										new PropertyMetadata(OnDataChanged));
+
+		private Action<BitModel> _bitModified;
 
 		public bool ReadOnly
 		{
@@ -27,10 +34,10 @@ namespace CorrectionCodes.Components
 			set => SetValue(ReadOnlyProperty, value);
 		}
 
-		public byte[] Bits
+		public BitData Data
 		{
-			get => (byte[])GetValue(BitsProperty);
-			set => SetValue(BitsProperty, value);
+			get => (BitData)GetValue(DataProperty);
+			set => SetValue(DataProperty, value);
 		}
 
 		public bool[] BitChanges
@@ -39,23 +46,45 @@ namespace CorrectionCodes.Components
 			set => SetValue(BitChangesProperty, value);
 		}
 
+		private BitData _lastData;
+
+		public EditableBitTable()
+		{
+			FlipBitCommand = new FlipBitCommand(this);
+		}
+
+		public void RaiseBitModified(BitModel bit)
+		{
+			_bitModified?.Invoke(bit);
+		}
+
+		public void SetBitModifiedHandler([CanBeNull] Action<BitModel> bitModel)
+		{
+			_bitModified = bitModel;
+		}
+
 		private static void OnReadOnlyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dpea)
 		{
-			var self = dependencyObject as EditableBitTable;
+			var self    = dependencyObject as EditableBitTable;
 			var command = self.FlipBitCommand as FlipBitCommand;
 			command.SetCanExecute(!(bool)dpea.NewValue);
 		}
 
-		private static void OnBitSourceChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dpea)
+		private static void OnDataChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dpea)
 		{
 			var self = dependencyObject as EditableBitTable;
-			if (!(dpea.NewValue is byte[] bits))
+			if (!(dpea.NewValue is BitData data))
 			{
 				self.ItemsSource = null;
+				self._lastData   = null;
 				return;
 			}
+			if (self._lastData != null
+				&& (data == self._lastData || self._lastData.TransmittedBits == data.TransmittedBits))
+				return;
 
-			var byteModels = CreateModels(bits);
+			self._lastData = data;
+			var byteModels = CreateModels(data);
 			self.ItemsSource = byteModels;
 		}
 
@@ -67,9 +96,9 @@ namespace CorrectionCodes.Components
 				self.ItemsSource = null;
 				return;
 			}
-			
+
 			var byteModels = self.ItemsSource as List<ByteModel>;
-			var bitModels = byteModels.SelectMany(bm => bm.Bits);
+			var bitModels  = byteModels.SelectMany(bm => bm.Bits);
 			foreach (var bitModel in bitModels)
 			{
 				bitModel.SetBitChanges(bitChanges);
@@ -77,19 +106,24 @@ namespace CorrectionCodes.Components
 		}
 
 		[NotNull]
-		private static List<ByteModel> CreateModels(byte[] bits)
+		private static List<ByteModel> CreateModels(BitData data)
 		{
-			var byteModels = new List<ByteModel>(bits.Length / 8);
+			byte[] bits           = data.TransmittedBits;
+			int    dataBytesCount = data.DataBitCount / 8;
+			var    byteModels     = new List<ByteModel>(bits.Length / 8);
 
-			int       i         = 0;
-			int       index     = 0;
-			var       bitModels = new BitModel[8];
-			ByteModel byteModel;
-			foreach (var bit in bits)
+			int i         = 0;
+			int index     = 0;
+			var bitModels = new BitModel[8];
+			foreach (var bit in bits.Concat(new byte[1]))
 			{
 				if (i == 8)
 				{
-					byteModel = new ByteModel(bitModels) { Index = byteModels.Count };
+					var byteModel = new ByteModel(bitModels)
+					{
+						Index      = byteModels.Count,
+						IsChecksum = dataBytesCount <= byteModels.Count
+					};
 					byteModels.Add(byteModel);
 
 					bitModels = new BitModel[8];
@@ -99,9 +133,8 @@ namespace CorrectionCodes.Components
 				i++;
 				index ++;
 			}
-			byteModel = new ByteModel(bitModels){ Index = byteModels.Count };
-			byteModels.Add(byteModel);
 			return byteModels;
 		}
+
 	}
 }
