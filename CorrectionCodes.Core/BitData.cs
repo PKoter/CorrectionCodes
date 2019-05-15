@@ -7,8 +7,12 @@ namespace CorrectionCodes.Core
 		[NotNull] public byte[] CorrectionBits  { get; set; }
 		[NotNull] public byte[] TransmittedBits { get; private set; }
 
+		[NotNull] public byte[] CorrectionBytes => CorrectionBits.ConvertToBytes();
+		[NotNull] public byte[] TramsmittedBytes => TransmittedBits.ConvertToBytes();
+
 		public bool[] DetectedBitErrors     { get; set; }
 		public byte[] FixedTransmittedBits  { get; set; }
+		public byte[] FixedTransmittedBytes { get; set; }
 		public bool   IncorrectTransmission { get; set; }
 
 		public int DataBitCount => TransmittedBits.Length;

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -9,6 +8,27 @@ namespace CorrectionCodes.Core
 {
 	public static class Extensions
 	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[NotNull]
+		public static byte[] ToBytes([NotNull] this string s)
+		{
+			return Encoding.ASCII.GetBytes(s);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[NotNull]
+		public static byte[] ConvertToBytes([NotNull] this byte[] bits)
+		{
+			return bits.GroupToBytes().Select(ba => ba.ToByte()).ToArray();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[NotNull]
+		public static byte[] ConvertToBits([NotNull] this byte[] bytes)
+		{
+			return bytes.SelectMany(b => b.ToBits()).ToArray();
+		}
+
 		[NotNull]
 		[ItemNotNull]
 		public static IEnumerable<byte[]> GroupToBytes([NotNull] this IEnumerable<byte> bits)
