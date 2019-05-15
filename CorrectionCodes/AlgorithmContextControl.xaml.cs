@@ -23,6 +23,7 @@ namespace CorrectionCodes
 			set
 			{
 				_controller = value;
+				this.errBitTable.SetBitModifiedHandler(_controller.OnBitModified);
 				this.DataContext = value;
 			}
 		}

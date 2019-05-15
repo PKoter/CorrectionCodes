@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using CorrectionCodes.Core;
+using CorrectionCodes.Models;
 using JetBrains.Annotations;
 
 namespace CorrectionCodes
@@ -25,12 +26,14 @@ namespace CorrectionCodes
 		public bool GenerateTextData { get; set; } = true;
 		public bool GenerateTransmissionErrors { get; set; } = true;
 
+		public bool? IncorrectTransmission{ get; private set; }
+
 		public event PropertyChangedEventHandler PropertyChanged;
 
 		public MainController([NotNull] ICorrectionCode codeAlgorithm, [NotNull] Random random)
 		{
 			_random = random;
-			_codeAlgo = codeAlgorithm;
+			_codeAlgo = codeAlgorithm ?? throw new ArgumentNullException();
 		}
 
 		public void GenerateText()
@@ -48,10 +51,25 @@ namespace CorrectionCodes
 
 			var textBytes = Encoding.ASCII.GetBytes(TextData);
 			_originalBits = textBytes.SelectMany(b => b.ToBits()).ToArray();
-			TransmittedBits = (byte[])_originalBits.Clone();
-			ModifiedBits = new bool[TransmittedBits.Length];
+			ComputeCode();
+			IncorrectTransmission = false;
+		}
 
-			DataModel = new BitData(new byte[8], TransmittedBits);
+		private void ComputeCode()
+		{
+			byte[] crcBits = null;
+			if (_codeAlgo is IByteBasedCode byteBasedCode)
+			{
+				var bytes = byteBasedCode.ComputeCode(_originalBits.ConvertToBytes());
+				crcBits = bytes.ConvertToBits();
+			}
+			else if(_codeAlgo is IBitBasedCode bitBasedCode)
+			{
+				crcBits = bitBasedCode.ComputeCode(_originalBits);
+			}
+			TransmittedBits = _originalBits.ConcatArray(crcBits);
+			DataModel = new BitData(crcBits, TransmittedBits, (byte[])_originalBits.Clone());
+			ModifiedBits = new bool[TransmittedBits.Length];
 		}
 
 		public void GenerateErrors()
@@ -59,7 +77,8 @@ namespace CorrectionCodes
 			if (_originalBits == null)
 				return;
 
-			TransmittedBits = (byte[])_originalBits.Clone();
+			var crcBits = DataModel.CorrectionBits;
+			TransmittedBits = _originalBits.ConcatArray(crcBits);
 
 			var bitErrors = new bool[TransmittedBits.Length];
 			for (int i = 0; i < GeneratedErrorCount; i++)
@@ -72,7 +91,24 @@ namespace CorrectionCodes
 				bitErrors[index ] = true;
 				TransmittedBits[index] ^= 1;
 			}
+			DataModel = new BitData(crcBits, TransmittedBits, DataModel.DataBits);
+			ComputeErrorStatistics(DataModel);
 			ModifiedBits = bitErrors;
+		}
+
+		private void ComputeErrorStatistics(BitData dataModel)
+		{
+			if (dataModel == null)
+				return;
+
+			_codeAlgo.DetectBitErrors(dataModel);
+			IncorrectTransmission = DataModel.IncorrectTransmission;
+		}
+
+		public void OnBitModified([NotNull] BitModel obj)
+		{
+			ComputeErrorStatistics(DataModel);
+
 		}
 	}
 }
