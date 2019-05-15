@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -70,6 +71,15 @@ namespace CorrectionCodes.Core
 				yield return (byte)((bajt & mask) >> i);
 			}
 			//return Convert.ToString(@byte, 2).Select(c => c == '1' ? (byte)1 : (byte)0);
+		}
+
+		[NotNull]
+		public static T[] ConcatArray<T>([NotNull] this T[] s, [NotNull] T[] add)
+		{
+			var result = new T[s.Length + add.Length];
+			Array.Copy(s, 0, result, 0, s.Length);
+			Array.Copy(add, 0, result, s.Length, add.Length);
+			return result;
 		}
 	}
 }

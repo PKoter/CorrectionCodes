@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using CorrectionCodes.Core;
 using FluentAssertions;
 using NUnit.Framework;
@@ -18,7 +17,7 @@ namespace Tests
 			var bytes = input.ToBytes();
 			var crc = Crc16.ComputeChecksum(bytes);
 
-			var payload = bytes.Concat(BitConverter.GetBytes(crc)).ToArray();
+			var payload = bytes.ConcatArray(BitConverter.GetBytes(crc));
 			var secondCrc = Crc16.ComputeChecksum(payload);
 
 			secondCrc.Should().Be(0);
@@ -33,7 +32,7 @@ namespace Tests
 			var crc   = Crc16.ComputeChecksum(bytes);
 
 			bytes[0] ^= 0x81;
-			var payload   = bytes.Concat(BitConverter.GetBytes(crc)).ToArray();
+			var payload   = bytes.ConcatArray(BitConverter.GetBytes(crc));
 			var secondCrc = Crc16.ComputeChecksum(payload);
 
 			secondCrc.Should().NotBe(0);
@@ -47,7 +46,7 @@ namespace Tests
 			var bytes = input.ToBytes();
 			var crc   = Crc32.ComputeChecksum(bytes);
 
-			var payload   = bytes.Concat(BitConverter.GetBytes(crc)).ToArray();
+			var payload   = bytes.ConcatArray(BitConverter.GetBytes(crc));
 			var secondCrc = Crc32.ComputeChecksum(payload);
 
 			secondCrc.Should().Be(0);
@@ -62,7 +61,7 @@ namespace Tests
 			var crc   = Crc32.ComputeChecksum(bytes);
 			
 			bytes[0] ^= 0x14;
-			var payload   = bytes.Concat(BitConverter.GetBytes(crc)).ToArray();
+			var payload   = bytes.ConcatArray(BitConverter.GetBytes(crc));
 			var secondCrc = Crc32.ComputeChecksum(payload);
 
 			secondCrc.Should().NotBe(0);
