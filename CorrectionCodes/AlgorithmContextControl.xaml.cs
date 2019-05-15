@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using CorrectionCodes.UI;
 
 namespace CorrectionCodes
 {
@@ -35,10 +36,13 @@ namespace CorrectionCodes
 
 		private void OnMainGridMouseDown(object sender, MouseButtonEventArgs e)
 		{
-			Keyboard.ClearFocus();
+			//Keyboard.ClearFocus();
+			//this.Focus();
+			//var focusRequest = new TraversalRequest(FocusNavigationDirection.First);
+			//(Keyboard.FocusedElement as UIElement)?.MoveFocus(focusRequest);
 		}
 
-		private void OnTextInputLostFocus(object sender, RoutedEventArgs e)
+		private void OnTextInputLostFocus(TextDelayedInput input, string newText)
 		{
 			_controller.ConvertTextToBits();
 		}

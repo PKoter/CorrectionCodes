@@ -86,6 +86,7 @@
     <Compile Include="UI\NumberComparerConverter.cs" />
     <Compile Include="UI\NumericTextBox.cs" />
     <Compile Include="UI\SuccinctGrid.cs" />
+    <Compile Include="UI\TextDelayedInput.cs" />
     <Page Include="AlgorithmContextControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
