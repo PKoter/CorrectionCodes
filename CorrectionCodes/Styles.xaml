@@ -17,6 +17,19 @@
 		</Setter>
 	</Style>
 
+	<Style TargetType="ListBoxItem">
+		<Setter Property="Focusable" Value="False"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type ListBoxItem}">
+					<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+														SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+														VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 	<Style BasedOn="{StaticResource {x:Type Button}}" x:Key="bitBtn" TargetType="Button">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -55,20 +68,21 @@
 						<ListBox.ItemTemplate>
 							<DataTemplate DataType="models:ByteModel">
 								<StackPanel Orientation="Horizontal" Margin="5,5,0,0" Width="250" Height="30">
-									<TextBlock Text="{Binding Index, Mode=OneWay}" VerticalAlignment="Center" FontSize="14"
-														 Foreground="Blue" TextDecorations="Underline" >
-										<TextBlock.ToolTip>
+									<Border Height="20" MinWidth="40" Background="Gainsboro">
+										<Border.ToolTip>
 											<TextBlock Text="{Binding Tooltip, Mode=OneWay}" Margin="10,0" FontSize="14"/>
-										</TextBlock.ToolTip>
-									</TextBlock>
-									<ListView ItemsSource="{Binding Bits, Mode=OneWay}" Background="Transparent" BorderBrush="Transparent" 
-														Padding="0">
-										<ListView.ItemsPanel>
+										</Border.ToolTip>
+										<TextBlock x:Name="index" Text="{Binding Index, Mode=OneWay}" VerticalAlignment="Center" FontSize="14"
+															 Foreground="Blue" HorizontalAlignment="Right" FontWeight="Bold"/>
+									</Border>
+									<ListBox ItemsSource="{Binding Bits, Mode=OneWay}" Background="Transparent" BorderBrush="Transparent" 
+													 Padding="0">
+										<ListBox.ItemsPanel>
 											<ItemsPanelTemplate>
 												<StackPanel Orientation="Horizontal" />
 											</ItemsPanelTemplate>
-										</ListView.ItemsPanel>
-										<ListView.ItemTemplate>
+										</ListBox.ItemsPanel>
+										<ListBox.ItemTemplate>
 											<DataTemplate DataType="models:BitModel">
 												<Grid Margin="0,0,0,0" Width="22" Height="22">
 													<Border x:Name="border" BorderBrush="DimGray" Background="GhostWhite" BorderThickness="0,1,1,1"
@@ -90,9 +104,14 @@
 													</DataTrigger>
 												</DataTemplate.Triggers>
 											</DataTemplate>
-										</ListView.ItemTemplate>
-									</ListView>
+										</ListBox.ItemTemplate>
+									</ListBox>
 								</StackPanel>
+								<DataTemplate.Triggers>
+									<DataTrigger Binding="{Binding IsChecksum, Mode=OneTime}" Value="True">
+										<Setter TargetName="index" Property="Foreground" Value="LimeGreen"/>
+									</DataTrigger>
+								</DataTemplate.Triggers>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 					</ListView>
@@ -142,7 +161,7 @@
 							<Setter Property="Panel.Background" TargetName="mainBorder" Value="LightSkyBlue"/>
 							<Setter Property="Panel.ZIndex" Value="1"/>
 							<Setter Property="BorderThickness" TargetName="mainBorder" Value="0"/>
-							<Setter Property="Margin" TargetName="mainBorder" Value="0,-2,0,-2"/>
+							<Setter Property="Margin" TargetName="mainBorder" Value="0,-2,0,-1"/>
 						</Trigger>
 					</ControlTemplate.Triggers>
 				</ControlTemplate>
