@@ -20,6 +20,10 @@ namespace CorrectionCodes
 		{
 			{"CRC 16", typeof(Crc16)},
 			{"CRC 32", typeof(Crc32)},
+			{"SDLC",   typeof(Crc16Sdlc)},
+			{"SDLC-REVERSE", typeof(SdlcReverse)},
+			{"Bit parzystości", typeof(ParityBit)},
+			{"Kod Hamminga", typeof(HammingCodes)},
 		};
 
 		public MainWindow()
