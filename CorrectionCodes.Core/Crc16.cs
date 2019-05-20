@@ -4,7 +4,7 @@ namespace CorrectionCodes.Core
 {
 	public sealed class Crc16 : IByteBasedCode
 	{
-		private const  ushort   polynomial = 0xA001;
+		private const  ushort   polynomial = 0x8005;
 		private static readonly ushort[] _table = new ushort[256];
 
 		static Crc16()

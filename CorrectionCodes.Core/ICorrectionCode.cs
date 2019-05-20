@@ -20,6 +20,8 @@ namespace CorrectionCodes.Core
 		/// <param name="rawBits"></param>
 		/// <returns></returns>
 		[NotNull] byte[] ComputeCode([NotNull] byte[] rawBits);
+
+		bool IsContagiousData { get; }
 	}
 
 	public interface IByteBasedCode : ICorrectionCode
