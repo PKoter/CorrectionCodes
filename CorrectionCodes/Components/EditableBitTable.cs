@@ -22,11 +22,13 @@ namespace CorrectionCodes.Components
 			DependencyProperty.Register(nameof(BitChanges), typeof(bool[]), typeof(EditableBitTable),
 										new PropertyMetadata(OnBitsModified));
 
+		public static DependencyProperty BitFixesProperty =
+			DependencyProperty.Register(nameof(BitFixes), typeof(int[]), typeof(EditableBitTable),
+										new PropertyMetadata(OnBitsFixed));
+
 		public static DependencyProperty DataProperty =
 			DependencyProperty.Register(nameof(Data), typeof(BitData), typeof(EditableBitTable),
 										new PropertyMetadata(OnDataChanged));
-
-		private Action<BitModel> _bitModified;
 
 		public bool ReadOnly
 		{
@@ -46,7 +48,17 @@ namespace CorrectionCodes.Components
 			set => SetValue(BitChangesProperty, value);
 		}
 
+		public int[] BitFixes
+		{
+			get => (int[])GetValue(BitChangesProperty);
+			set => SetValue(BitChangesProperty, value);
+		}
+
+		private Action<BitModel> _bitModified;
 		private BitData _lastData;
+
+		private IEnumerable<BitModel> BitModels =>
+			(this.ItemsSource as List<ByteModel>).SelectMany(bm => bm.Bits).Where(b => b != null);
 
 		public EditableBitTable()
 		{
@@ -97,11 +109,46 @@ namespace CorrectionCodes.Components
 				return;
 			}
 
-			var byteModels = self.ItemsSource as List<ByteModel>;
-			var bitModels  = byteModels.SelectMany(bm => bm.Bits);
+			var bitModels = self.BitModels;
 			foreach (var bitModel in bitModels)
 			{
 				bitModel.SetBitChanges(bitChanges);
+			}
+		}
+
+		private static void OnBitsFixed(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dpea)
+		{
+			var self = dependencyObject as EditableBitTable;
+			if (!(dpea.NewValue is int[] bitFixes))
+			{
+				if (self.ItemsSource == null)
+					return;
+
+				foreach (var bitModel in self.BitModels)
+				{
+					bitModel.DetectedError = false;
+				}
+				return;
+			}
+
+			Array.Sort(bitFixes);
+			int count = 0;
+			int index = 0;
+			var bitModels = self.BitModels;
+			foreach (var bitModel in bitModels)
+			{
+				if (index == bitFixes[count])
+				{
+					bitModel.DetectedError = true;
+					count++;
+					if (count == bitFixes.Length)
+						break;
+				}
+				else
+				{
+					bitModel.DetectedError = false;
+				}
+				index++;
 			}
 		}
 
@@ -115,14 +162,16 @@ namespace CorrectionCodes.Components
 			int i         = 0;
 			int index     = 0;
 			var bitModels = new BitModel[8];
+			//var excessLength = 1 + (data.PayloadBitCount % 8 == 0 ? 0 : 8 - data.PayloadBitCount % 8);
+
 			foreach (var bit in bits.Concat(new byte[1]))
 			{
-				if (i == 8)
+				if (i == 8 || index >= data.PayloadBitCount)
 				{
 					var byteModel = new ByteModel(bitModels)
 					{
 						Index      = byteModels.Count,
-						IsChecksum = dataBytesCount <= byteModels.Count
+						IsChecksum = dataBytesCount <= byteModels.Count && !data.UncontagiousData
 					};
 					byteModels.Add(byteModel);
 

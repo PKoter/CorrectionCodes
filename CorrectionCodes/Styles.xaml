@@ -100,7 +100,10 @@
 														<Setter TargetName="border" Property="BorderThickness" Value="1"/>
 													</DataTrigger>
 													<DataTrigger Binding="{Binding Modified, Mode=OneWay}" Value="True">
-														<Setter TargetName="border" Property="Background" Value="#9FFFDEB3"/>
+														<Setter TargetName="border" Property="Background" Value="#AFFFDEB3"/>
+													</DataTrigger>
+													<DataTrigger Binding="{Binding DetectedError, Mode=OneWay}" Value="True">
+														<Setter TargetName="border" Property="Background" Value="#AFBDFFB3"/>
 													</DataTrigger>
 												</DataTemplate.Triggers>
 											</DataTemplate>
