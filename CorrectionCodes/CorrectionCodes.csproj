@@ -162,9 +162,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="FontAwesome.WPF">
-      <Version>4.7.0.9</Version>
-    </PackageReference>
     <PackageReference Include="JetBrains.Annotations">
       <Version>2019.1.1</Version>
     </PackageReference>
