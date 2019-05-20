@@ -13,20 +13,26 @@ namespace CorrectionCodes
 		private Random _random;
 		private byte[] _originalBits;
 		private ICorrectionCode _codeAlgo;
+		private bool _notContagiousData;
 
 		public string TextData { get; set; }
 		public int?   TextLength => TextData?.Length;
 		public byte[] TransmittedBits { get; private set; }
 		public bool[] ModifiedBits { get; private set; }
+		public int[] FixedBits { get; private set; }
 		public BitData DataModel { get; private set; }
 
 
 		public int GeneratedTextLength { get; set; } = 1;
 		public int GeneratedErrorCount { get; set; } = 0;
-		public bool GenerateTextData { get; set; } = true;
+		public bool GenerateTextData   { get; set; } = true;
 		public bool GenerateTransmissionErrors { get; set; } = true;
+		public bool DetectedErrorsAreWrong { get; set; }
+		public bool WrongTransmissionEvaluation { get; set; }
 
-		public bool? IncorrectTransmission{ get; private set; }
+		public bool? IncorrectTransmission { get; private set; }
+		public int FixedBitErrorsCount     { get; set; }
+		public int MissedBitErrorsCount    { get; set; }
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
@@ -34,6 +40,7 @@ namespace CorrectionCodes
 		{
 			_random = random;
 			_codeAlgo = codeAlgorithm ?? throw new ArgumentNullException();
+			_notContagiousData = _codeAlgo is IBitBasedCode bitBased && !bitBased.IsContagiousData;
 		}
 
 		public void GenerateText()
@@ -67,8 +74,18 @@ namespace CorrectionCodes
 			{
 				crcBits = bitBasedCode.ComputeCode(_originalBits);
 			}
-			TransmittedBits = _originalBits.ConcatArray(crcBits);
-			DataModel = new BitData(crcBits, TransmittedBits, (byte[])_originalBits.Clone());
+			if (_notContagiousData)
+			{
+				TransmittedBits  = crcBits;
+				var emptyCrcBits = new byte[crcBits.Length - _originalBits.Length];
+				DataModel        = new BitData(emptyCrcBits, crcBits, _originalBits, _notContagiousData);
+				_originalBits    = (byte[])TransmittedBits.Clone();
+			}
+			else
+			{
+				TransmittedBits = _originalBits.ConcatArray(crcBits);
+				DataModel       = new BitData(crcBits, TransmittedBits, _originalBits);
+			}
 			ModifiedBits = new bool[TransmittedBits.Length];
 		}
 
@@ -78,7 +95,10 @@ namespace CorrectionCodes
 				return;
 
 			var crcBits = DataModel.CorrectionBits;
-			TransmittedBits = _originalBits.ConcatArray(crcBits);
+			if(_notContagiousData)
+				TransmittedBits = (byte[])_originalBits.Clone();
+			else
+				TransmittedBits = _originalBits.ConcatArray(crcBits);
 
 			var bitErrors = new bool[TransmittedBits.Length];
 			for (int i = 0; i < GeneratedErrorCount; i++)
@@ -91,9 +111,9 @@ namespace CorrectionCodes
 				bitErrors[index ] = true;
 				TransmittedBits[index] ^= 1;
 			}
-			DataModel = new BitData(crcBits, TransmittedBits, DataModel.DataBits);
-			ComputeErrorStatistics(DataModel);
+			DataModel = new BitData(crcBits, TransmittedBits, DataModel.DataBits, _notContagiousData);
 			ModifiedBits = bitErrors;
+			ComputeErrorStatistics(DataModel);
 		}
 
 		private void ComputeErrorStatistics(BitData dataModel)
@@ -101,8 +121,24 @@ namespace CorrectionCodes
 			if (dataModel == null)
 				return;
 
+			dataModel.FixedBitErrorIndexes = null;
 			_codeAlgo.DetectBitErrors(dataModel);
 			IncorrectTransmission = DataModel.IncorrectTransmission;
+			FixedBitErrorsCount = DataModel.FixedBitCount;
+
+			var missedErrors = ModifiedBits.Count(b => b)- DataModel.FixedBitCount;
+			if (DataModel.FixedBitCount > 0)
+			{
+				var wronglyDetected = DataModel.FixedBitErrorIndexes.Select(i => ModifiedBits[i]).Count(m => m == false);
+				missedErrors += wronglyDetected;
+				DetectedErrorsAreWrong = wronglyDetected > 0;
+			}
+			else
+				DetectedErrorsAreWrong = false;
+
+			MissedBitErrorsCount = missedErrors;
+			WrongTransmissionEvaluation = MissedBitErrorsCount > 0 && IncorrectTransmission != true;
+			FixedBits = dataModel.FixedBitErrorIndexes;
 		}
 
 		public void OnBitModified([NotNull] BitModel obj)
