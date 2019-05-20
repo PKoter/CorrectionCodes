@@ -1,8 +1,5 @@
 ﻿using System.ComponentModel;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using JetBrains.Annotations;
-using PropertyChanged;
 
 namespace CorrectionCodes.Models
 {
@@ -23,12 +20,6 @@ namespace CorrectionCodes.Models
 				_changes[_index] = Modified;
 				_source[_index] = (byte)value;
 			}
-		}
-
-		public bool Bool
-		{
-			get => NumericValue == 1; 
-			//set => NumericValue = value ? 1 : 0;
 		}
 
 		public bool Modified { get; set; }

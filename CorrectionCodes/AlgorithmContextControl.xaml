@@ -90,6 +90,7 @@
 						<components:EditableBitTable x:Name="errBitTable" MinHeight="100" MinWidth="220" 
 																				 Data="{Binding DataModel, Mode=OneWay}"
 																				 BitChanges="{Binding ModifiedBits, Mode=OneWay}"
+																				 BitFixes="{Binding FixedBits, Mode=OneWay}"
 																				 ReadOnly="{Binding IsChecked, ElementName=autoErrGen, Mode=OneWay}"/>
 					</DockPanel>
 				</ui:SuccinctGrid>
@@ -97,10 +98,10 @@
 			</GroupBox>
 
 			<GroupBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="2" Header="Statystyki" Padding="5">
-				<ui:SuccinctGrid Columns="*,*,*">
+				<ui:SuccinctGrid Columns="*,10,*">
 					<StackPanel Orientation="Vertical">
 						<TextBlock Text="Rozmiar wiadomości" FontSize="14" Margin="0,0,0,10"/>
-						<ui:SuccinctGrid Columns="*,10,*" Rows="28,28,28">
+						<ui:SuccinctGrid Columns="2*,10,*" Rows="28,28,28">
 							<TextBlock Text="Bity treści" FontSize="14" HorizontalAlignment="Right"/>
 							<TextBlock Grid.Row="1" Text="Bity nadmiarowe" FontSize="14" HorizontalAlignment="Right"/>
 							<TextBlock Grid.Row="2" Text="Suma" FontSize="14" HorizontalAlignment="Right"/>
@@ -111,31 +112,45 @@
 						</ui:SuccinctGrid>
 					</StackPanel>
 
-					<StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0">
+					<StackPanel Grid.Column="2" Orientation="Vertical" Margin="10,0">
 						<TextBlock Text="Poprawność" FontSize="14" Margin="0,0,0,10"/>
-						<ui:SuccinctGrid Columns="*,10,*" Rows="28,28,28">
-							<TextBlock Text="Transmisja" FontSize="14" HorizontalAlignment="Right"/>
-							<TextBlock Grid.Row="1" Text="Bity nadmiarowe" FontSize="14" HorizontalAlignment="Right"/>
-							<TextBlock Grid.Row="2" Text="Suma" FontSize="14" HorizontalAlignment="Right"/>
+						<ui:SuccinctGrid Columns="2*,10,*" Rows="28,28,28">
+							<TextBlock Text="Ocena poprawności transmisji" FontSize="14" HorizontalAlignment="Right"/>
+							<TextBlock Grid.Row="1" Text="Wykryte błędy bitów" FontSize="14" HorizontalAlignment="Right"/>
+							<TextBlock Grid.Row="2" Text="Ukryte błędy bitów" FontSize="14" HorizontalAlignment="Right"/>
 
 							<TextBlock Grid.Column="2" FontSize="14" >
 								<TextBlock.Style>
 									<Style >
 										<Style.Triggers>
 											<DataTrigger Binding="{Binding IncorrectTransmission, Mode=OneWay}" Value="True">
-												<Setter Property="TextBlock.Foreground" Value="Red"/>
 												<Setter Property="TextBlock.Text" Value="Błędna"/>
 											</DataTrigger>
 											<DataTrigger Binding="{Binding IncorrectTransmission, Mode=OneWay}" Value="False">
-												<Setter Property="TextBlock.Foreground" Value="LimeGreen"/>
 												<Setter Property="TextBlock.Text" Value="Poprawna"/>
+											</DataTrigger>
+											<DataTrigger Binding="{Binding WrongTransmissionEvaluation, Mode=OneWay}" Value="True">
+												<Setter Property="TextBlock.Foreground" Value="Red"/>
+											</DataTrigger>
+											<DataTrigger Binding="{Binding WrongTransmissionEvaluation, Mode=OneWay}" Value="False">
+												<Setter Property="TextBlock.Foreground" Value="LimeGreen"/>
 											</DataTrigger>
 										</Style.Triggers>
 									</Style>
 								</TextBlock.Style>
 							</TextBlock>
-							<TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding DataModel.CorrectionBitCount, Mode=OneWay}" FontSize="14" />
-							<TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding DataModel.PayloadBitCount, Mode=OneWay}" FontSize="14" />
+							<TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding FixedBitErrorsCount, Mode=OneWay}" FontSize="14">
+								<TextBlock.Style>
+									<Style >
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding DetectedErrorsAreWrong, Mode=OneWay}" Value="True">
+												<Setter Property="TextBlock.Foreground" Value="Red"/>
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+							<TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding MissedBitErrorsCount, Mode=OneWay}" FontSize="14" />
 						</ui:SuccinctGrid>
 					</StackPanel>
 
