@@ -45,7 +45,8 @@ namespace CorrectionCodes
 
 		public void GenerateText()
 		{
-			var chars = Enumerable.Repeat(1, GeneratedTextLength).Select(i => (char)_random.Next('a', 'z' + 1));
+			var charCount = Math.Min(100, GeneratedTextLength);
+			var chars = Enumerable.Repeat(1, charCount).Select(i => (char)_random.Next('a', 'z' + 1));
 			TextData = string.Concat(chars);
 
 			ConvertTextToBits();
@@ -101,7 +102,8 @@ namespace CorrectionCodes
 				TransmittedBits = _originalBits.ConcatArray(crcBits);
 
 			var bitErrors = new bool[TransmittedBits.Length];
-			for (int i = 0; i < GeneratedErrorCount; i++)
+			var errorCount = Math.Min(TextLength.Value, GeneratedErrorCount);
+			for (int i = 0; i < errorCount; i++)
 			{
 				int index;
 				do
