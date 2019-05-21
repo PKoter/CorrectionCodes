@@ -125,73 +125,20 @@ namespace Tests
 		[Test]
 		public void HammingCodes_IfMyGroupIsBunchOfRetardThenYesTheyHaveADownSyndrome()
 		{
-			/*
-			int n = 1;
-			int take = n - 1;
-			WriteLine(string.Join(',', Enumerable.Range(0, 20).Where(i =>
-			{
-				if (i >= take && i < take + n)
-					return true;
-				if (i == take + n)
-					take += n * 2;
-				return false;
-			}).Select(p =>  (p).ToString())));
-			n = 2;
-			take = n - 1;
-			WriteLine(string.Join(',', Enumerable.Range(0, 20).Where(i =>
-			{
-				if (i >= take && i < take + n)
-					return true;
-				if (i == take + n)
-					take += n * 2;
-				return false;
-			}).Select(p =>  (p).ToString())));
-			n    = 4;
-			take = n - 1;
-			WriteLine(string.Join(',', Enumerable.Range(0, 20).Where(i =>
-			{
-				if (i >= take && i < take + n)
-					return true;
-				if (i == take + n)
-					take += n * 2;
-				return false;
-			}).Select(p =>  (p).ToString())));
-			n    = 8;
-			take = n - 1;
-			WriteLine(string.Join(',', Enumerable.Range(0, 20).Where(i =>
-			{
-				if (i >= take && i < take + n)
-					return true;
-				if (i == take + n)
-					take += n * 2;
-				return false;
-			}).Select(p =>  (p).ToString())));
-			n    = 16;
-			take = n - 1;
-			WriteLine(string.Join(',', Enumerable.Range(0, 20).Where(i  =>
-			{
-				if (i >= take && i < take + n)
-					return true;
-				if (i == take + n)
-					take += n * 2;
-				return false;
-			}).Select(p => (p).ToString())));
-			*/
-
 			var bits = new byte[] { 1,0,0,1,1,0,1,0 };
 			var transmitted = HammingCodes.Encode(bits);
 
 			WriteLine($"{bits.Length} {transmitted.Length}");
 
-			//transmitted[5] ^= 1;
+			transmitted[5] ^= 1;
 			WriteLine(string.Join(",", transmitted));
-			WriteLine(HammingCodes.ErrorSyndrome(transmitted));
+			HammingCodes.ErrorSyndrome(transmitted).Should().Be(6);
+
+			transmitted[5] ^= 1;
+			HammingCodes.ErrorSyndrome(transmitted).Should().Be(0);
 
 			var decoded = HammingCodes.Decode(transmitted, bits.Length);
-			WriteLine(bits.SequenceEqual(decoded));
-
-			Program.Main(null);
-
+			Assert.True(bits.SequenceEqual(decoded));
 		}
 	}
 }
