@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CorrectionCodes.Core;
@@ -15,10 +14,10 @@ namespace Tests
 		[TestCase("yo nibbas we'll ride on 'em")]
 		public void Extensions_ConvertToBitsAndBackCorrect(string input)
 		{
-			var bytes = Encoding.ASCII.GetBytes(input);
+			var bytes = input.ToBytes();
 			Console.WriteLine(string.Concat(bytes.Select(b => Convert.ToString(b, 2))));
 
-			var bits = bytes.SelectMany(b => b.ToBits()).ToArray();
+			var bits = bytes.ConvertToBits();
 			Console.WriteLine(string.Concat(bits));
 
 			var byteArrays = bits.GroupToBytes();

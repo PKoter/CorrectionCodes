@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using JetBrains.Annotations;
 
@@ -9,6 +9,27 @@ namespace CorrectionCodes.Core
 {
 	public static class Extensions
 	{
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[NotNull]
+		public static byte[] ToBytes([NotNull] this string s)
+		{
+			return Encoding.ASCII.GetBytes(s);
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[NotNull]
+		public static byte[] ConvertToBytes([NotNull] this byte[] bits)
+		{
+			return bits.GroupToBytes().Select(ba => ba.ToByte()).ToArray();
+		}
+
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		[NotNull]
+		public static byte[] ConvertToBits([NotNull] this byte[] bytes)
+		{
+			return bytes.SelectMany(b => b.ToBits()).ToArray();
+		}
+
 		[NotNull]
 		[ItemNotNull]
 		public static IEnumerable<byte[]> GroupToBytes([NotNull] this IEnumerable<byte> bits)
@@ -50,6 +71,15 @@ namespace CorrectionCodes.Core
 				yield return (byte)((bajt & mask) >> i);
 			}
 			//return Convert.ToString(@byte, 2).Select(c => c == '1' ? (byte)1 : (byte)0);
+		}
+
+		[NotNull]
+		public static T[] ConcatArray<T>([NotNull] this T[] s, [NotNull] T[] add)
+		{
+			var result = new T[s.Length + add.Length];
+			Array.Copy(s, 0, result, 0, s.Length);
+			Array.Copy(add, 0, result, s.Length, add.Length);
+			return result;
 		}
 	}
 }

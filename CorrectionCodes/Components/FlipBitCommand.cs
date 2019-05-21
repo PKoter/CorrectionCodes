@@ -1,19 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 using System.Windows.Input;
 using CorrectionCodes.Models;
+using JetBrains.Annotations;
 
 namespace CorrectionCodes.Components
 {
 	public sealed class FlipBitCommand : ICommand
 	{
+		private EditableBitTable _bitTable;
+		private bool _canExecute = true;
+
+		public FlipBitCommand([NotNull] EditableBitTable bitTable) 
+		{
+			_bitTable = bitTable;
+		}
+
+		public void SetCanExecute(bool canExecute)
+		{
+			if (_canExecute != canExecute)
+			{
+				_canExecute = canExecute;
+				CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+			}
+		}
+
 		public bool CanExecute(object parameter)
 		{
-			return true;
+			return _canExecute;
 		}
 
 		public void Execute(object parameter)
@@ -22,6 +35,7 @@ namespace CorrectionCodes.Components
 				return;
 
 			bitModel.FlipBit();
+			_bitTable.RaiseBitModified(bitModel);
 		}
 
 		public event EventHandler CanExecuteChanged;

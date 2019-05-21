@@ -14,5 +14,9 @@ Przydatne komendy przy pracy bez środowiska Visual Studio (VS Code / inny edyto
 
 Komendy wykonujemy w folderze z plikiem solucji (.sln)
 
-### Wymagane: 
+### Wymagane 
  - .NET Core SDK 2.0
+
+### Wynikowa aplikacja
+Ostatecznie aplikacja prezentuje się w sposób następujący:
+<img src="./hamming_ui.PNG" />

@@ -62,10 +62,6 @@
     <StartupObject>CorrectionCodes.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=2019.1.1.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\jetbrains.annotations\2019.1.1\lib\netstandard2.0\JetBrains.Annotations.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -82,6 +78,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AlgorithmContextControl.xaml.cs">
+      <DependentUpon>AlgorithmContextControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainController.cs" />
+    <Compile Include="UI\NegateBoolConverter.cs" />
+    <Compile Include="UI\NumberComparerConverter.cs" />
+    <Compile Include="UI\NumericTextBox.cs" />
+    <Compile Include="UI\SuccinctGrid.cs" />
+    <Compile Include="UI\TextDelayedInput.cs" />
+    <Page Include="AlgorithmContextControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -149,18 +158,15 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Fody">
-      <Version>3.2.1</Version>
+      <Version>5.0.0</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="FontAwesome.WPF">
-      <Version>4.7.0.9</Version>
     </PackageReference>
     <PackageReference Include="JetBrains.Annotations">
       <Version>2019.1.1</Version>
     </PackageReference>
     <PackageReference Include="PropertyChanged.Fody">
-      <Version>2.5.9</Version>
+      <Version>3.0.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
